@@ -149,7 +149,7 @@ public void setup() {
     cam.start();
   }*/
   
-  cam = new Movie(this, "C:/Users/HP/Documents/EPFL/4/InfoVisuel/Game/testvideo.mp4");
+  cam = new Movie(this, "testvideo.mp4");
   cam.loop();
 
 }
@@ -260,7 +260,7 @@ public void draw() {
   img.resize(320, 240);
   image(img, 0, 0);
  
-  sob = sobel(whiteTh(convolute(hueTh(preHueTh(convolute(convolute(convolute(img))))))));
+  sob = sobel(whiteTh(convolute(hueTh(preHueTh(convolute(img))))));
   hough(sob, 4);
   
   fill(255);
