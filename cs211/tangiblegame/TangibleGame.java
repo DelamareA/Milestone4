@@ -192,7 +192,7 @@ public void draw() {
     ball.checkCylinderCollision();
 
 
-    camera(width/2, height/2 - 60, depth, width/2, height/2, 0, 0, 1, 0);
+    camera(width/2, height/2 - 20, depth, width/2, height/2, 0, 0, 1, 0);
 
     translate(width/2, height/2, 0);
 
@@ -829,7 +829,7 @@ public static float area(PVector c1, PVector c2, PVector c3, PVector c4) {
 public static boolean nonFlatQuad(PVector c1, PVector c2, PVector c3, PVector c4) {
 
   // cos(45deg) ~= 0.70
-  float min_cos = 0.70f;
+  float min_cos = 0.7f;
 
   PVector v21= PVector.sub(c1, c2);
   PVector v32= PVector.sub(c2, c3);
