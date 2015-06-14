@@ -828,8 +828,8 @@ public static float area(PVector c1, PVector c2, PVector c3, PVector c4) {
  */
 public static boolean nonFlatQuad(PVector c1, PVector c2, PVector c3, PVector c4) {
 
-  // cos(63deg) ~= 0.45
-  float min_cos = 0.45f;
+  // cos(45deg) ~= 0.70
+  float min_cos = 0.70f;
 
   PVector v21= PVector.sub(c1, c2);
   PVector v32= PVector.sub(c2, c3);
