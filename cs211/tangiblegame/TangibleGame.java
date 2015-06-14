@@ -41,16 +41,9 @@ float ballSize = 2;
 
 boolean addCylinderMode = false;
 
-PVector gravity;
-
-float cylinderBaseSize = 1;
-float cylinderHeight = 9;
-int cylinderResolution = 40;
+float cylinderBaseSize = 2;
 
 PShape closedCylinder = new PShape();
-PShape openCylinder = new PShape();
-PShape topCylinder = new PShape();
-PShape bottomCylinder = new PShape();
 
 PShape sheep_shape_alive = new PShape();
 PShape sheep_shape_dead = new PShape();
@@ -67,6 +60,7 @@ PGraphics backgroundSurface;
 PGraphics topViewSurface;
 PGraphics scoreSurface;
 PGraphics barChartSurface;
+PGraphics sprotchSurface;
 
 float score;
 float totalScore;
@@ -74,6 +68,7 @@ int nbCurrentScore = 0;
 int nbScoreMax;
 
 int timeSinceLastEvent = 0;
+int timeSinceLastSprotch = 0;
 
 float[] tabScore;
 
@@ -83,7 +78,6 @@ HScrollbar hs;
 //Capture cam;
 Movie cam;
 PImage img;
-PImage imgTest;
 PImage sob;
 PImage back;
 
@@ -119,13 +113,14 @@ public void setup() {
   topViewSurface = createGraphics(backgroundSurface.height - 10, backgroundSurface.height - 10, P2D);
   scoreSurface = createGraphics(120, backgroundSurface.height - 10, P2D);
   barChartSurface = createGraphics(backgroundSurface.width - topViewSurface.width - scoreSurface.width - 70, backgroundSurface.height - 40, P2D);
+  sprotchSurface = createGraphics(180, 60, P2D);
   nbScoreMax = (int)(barChartSurface.width/(pow(4.0f, 0.5f)));
   tabScore = new float[nbScoreMax];
 
   ball = new Mover();
   cylinderList = new ArrayList<PVector>();
   closedCylinder = loadShape("tourTextUnit.obj"); // we removed the texture of the tower for better performance
-  closedCylinder.scale(0.12f);
+  closedCylinder.scale(0.12f * cylinderBaseSize);
   closedCylinder.rotateX(PI/2);
   
   sheeps = new ArrayList<Sheep>();
@@ -197,7 +192,7 @@ public void draw() {
     ball.checkCylinderCollision();
 
 
-    camera(width/2, height/2 - 20, depth, width/2, height/2, 0, 0, 1, 0);
+    camera(width/2, height/2 - 60, depth, width/2, height/2, 0, 0, 1, 0);
 
     translate(width/2, height/2, 0);
 
@@ -248,10 +243,12 @@ public void draw() {
   drawScoreSurface();
   drawBarChartSurface();
   drawTopViewSurface();
+  drawSprotchSurface();
   image(backgroundSurface, 0, height - backgroundSurface.height);
   image(topViewSurface, 5, height-backgroundSurface.height+5);
   image(scoreSurface, topViewSurface.width + 20, height - scoreSurface.height - 5);
   image(barChartSurface, topViewSurface.width + scoreSurface.width +50, height - scoreSurface.height - 5);
+  image(sprotchSurface, width/2 - sprotchSurface.width/2, 20);
 
   hs.update();
   hs.display();
@@ -456,7 +453,7 @@ class Mover {
   Mover() {
     location = new PVector(0, -4, 0);
     velocity = new PVector(0, 0, 0);
-    gravity = new PVector(0, 0.14f, 0);
+    gravity = new PVector(0, 0.19f, 0);
   }
   
   public void update() {
@@ -875,8 +872,8 @@ public boolean isInQuad(PVector pt, PVector p0, PVector p1, PVector p2, PVector 
 
 
 public class Sheep{
-   boolean sheep_is_alive;
-   PVector sheep_position;
+   public boolean sheep_is_alive;
+   public PVector sheep_position;
    float sheep_height;
    float sheep_orientation;
    
@@ -967,6 +964,8 @@ public class Sheep{
            
            score = 4;
            totalScore += score;
+           
+           timeSinceLastSprotch = millis();
       }
   }
   
@@ -1776,10 +1775,19 @@ public void drawTopViewSurface() {
     float posY = (boardSize/2 + cylinderList.get(i).y) / zoom;
     topViewSurface.ellipse(posX, posY, 2*cylinderBaseSize/zoom, 2*cylinderBaseSize/zoom);
   }
+  
+  topViewSurface.fill(0);
+  for (int i = 0; i < sheeps.size (); i ++) {
+    if (sheeps.get(i).sheep_is_alive){
+      float posX = (boardSize/2 + sheeps.get(i).sheep_position.x) / zoom;
+      float posY = (boardSize/2 + sheeps.get(i).sheep_position.y) / zoom;
+      topViewSurface.ellipse(posX, posY, 2/zoom, 2/zoom);
+    }
+  }
 
   float ballPosX = (ball.location.x + boardSize/2)/zoom; //adding topViewSurfaceSize/2 because the ball is at position 0, 0 at the center of the plate.
   float ballPosY = (ball.location.z  + boardSize/2)/zoom;
-  topViewSurface.fill(0, 255, 0);
+  topViewSurface.fill(0, 240, 0);
   topViewSurface.ellipse(ballPosX, ballPosY, 2*ballSize/zoom, 2*ballSize/zoom);
   topViewSurface.endDraw();
 }
@@ -1839,6 +1847,20 @@ public void drawBarChartSurface() {
 
     barChartSurface.endDraw();
   }
+}
+
+public void drawSprotchSurface(){
+  sprotchSurface.beginDraw();
+  sprotchSurface.background(255, 0.0f);
+  if (millis() - timeSinceLastSprotch <= 1000) {
+    sprotchSurface.textSize(35);
+    sprotchSurface.fill(240, 40, 40);
+    sprotchSurface.text("SPROTCH", 10, 40);
+  }
+  
+  
+  sprotchSurface.endDraw();
+  
 }
 
   static public void main(String[] passedArgs) {
